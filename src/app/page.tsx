@@ -56,12 +56,13 @@ export default function Home() {
 
   useEffect(() => {
     const fetchCompanies = async () => {
+      const apiKey = process.env.NEXT_PUBLIC_SERPER_API_KEY;
+      if (!apiKey) {
+        console.error('Serper API key is missing. Please set the NEXT_PUBLIC_SERPER_API_KEY environment variable.');
+        // It's important to return here to prevent the fetch from running without a key.
+        return;
+      }
       try {
-        const apiKey = process.env.NEXT_PUBLIC_SERPER_API_KEY;
-        if (!apiKey) {
-          console.error('Serper API key is missing. Please set the NEXT_PUBLIC_SERPER_API_KEY environment variable.');
-          return;
-        }
         const query = 'list of companies in the world';
         const apiUrl = `https://google.serper.dev/search?q=${query}`;
 
