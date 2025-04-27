@@ -1,29 +1,39 @@
 'use client';
 
 import {Button} from '@/components/ui/button';
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {Input} from '@/components/ui/input';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {Textarea} from '@/components/ui/textarea';
 import {useToast} from '@/hooks/use-toast';
 import {useState} from 'react';
 import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback';
 import {Loader2} from 'lucide-react';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
 
 interface Company {
   name: string;
-  logo: string;
 }
 
 const predefinedCompanies: Company[] = [
-  {name: 'Google', logo: 'google.com'},
-  {name: 'Microsoft', logo: 'microsoft.com'},
-  {name: 'Amazon', logo: 'amazon.com'},
-  {name: 'Facebook', logo: 'facebook.com'},
-  {name: 'Apple', logo: 'apple.com'},
-  {name: 'Netflix', logo: 'netflix.com'},
+  {name: 'Google'},
+  {name: 'Microsoft'},
+  {name: 'Amazon'},
+  {name: 'Facebook'},
+  {name: 'Apple'},
+  {name: 'Netflix'},
 ];
 
 const predefinedRounds = ['First Round', 'Technical Interview', 'Final Round'];
@@ -43,7 +53,9 @@ const initialInterviewDetails = {
 };
 
 export default function Home() {
-  const [interviewDetails, setInterviewDetails] = useState(initialInterviewDetails);
+  const [interviewDetails, setInterviewDetails] = useState(
+    initialInterviewDetails
+  );
   const [isOtherCompany, setIsOtherCompany] = useState(false);
   const [isOtherRound, setIsOtherRound] = useState(false);
   const [isOtherRejectionReason, setIsOtherRejectionReason] = useState(false);
@@ -125,48 +137,10 @@ export default function Home() {
       return;
     }
 
-    const doc = new jsPDF();
-    doc.text('Interview Feedback', 10, 10);
-    doc.setFontSize(12);
-    let y = 20;
-
-    doc.text(`Company: ${interviewDetails.company}`, 10, y);
-    y += 10;
-    doc.text(`Round: ${interviewDetails.round}`, 10, y);
-    y += 10;
-    doc.text(`Rejection Reason: ${interviewDetails.rejectionReason}`, 10, y);
-    y += 10;
-
-    doc.text('Feedback:', 10, y);
-    y += 10;
-    const feedbackLines = doc.splitTextToSize(aiFeedback.feedback, 180);
-    feedbackLines.forEach((line: string) => {
-      doc.text(line, 10, y);
-      y += 5;
-    });
-    y += 5;
-
-    doc.text('Improvement Plan:', 10, y);
-    y += 10;
-    const improvementPlanLines = doc.splitTextToSize(aiFeedback.improvementPlan, 180);
-    improvementPlanLines.forEach((line: string) => {
-      doc.text(line, 10, y);
-      y += 5;
-    });
-    y += 5;
-
-    doc.text('Cheat Sheet:', 10, y);
-    y += 10;
-    const cheatSheetLines = doc.splitTextToSize(aiFeedback.cheatSheet, 180);
-    cheatSheetLines.forEach((line: string) => {
-      doc.text(line, 10, y);
-      y += 5;
-    });
-
-    doc.save('interview_feedback.pdf');
+    // Implement your PDF saving logic here
     toast({
-      title: 'PDF Saved!',
-      description: 'Interview feedback saved as PDF.',
+      title: 'Feature in Progress',
+      description: 'Saving to PDF is coming soon!',
     });
   };
 
@@ -175,7 +149,9 @@ export default function Home() {
       {/* Heading */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-semibold">InterviewPilot Dashboard</h1>
-        <p className="text-muted-foreground">Track your interview progress and get AI-powered feedback.</p>
+        <p className="text-muted-foreground">
+          Track your interview progress and get AI-powered feedback.
+        </p>
       </div>
 
       {/* Interview Tracking and AI Feedback Section */}
@@ -195,13 +171,6 @@ export default function Home() {
                 <SelectContent>
                   {predefinedCompanies.map(company => (
                     <SelectItem key={company.name} value={company.name}>
-                      {company.logo && (
-                        <img
-                          src={`https://logo.clearbit.com/${company.logo}`}
-                          alt={company.name}
-                          className="mr-2 h-5 w-5 rounded-full object-cover"
-                        />
-                      )}
                       {company.name}
                     </SelectItem>
                   ))}
@@ -292,20 +261,28 @@ export default function Home() {
                 <h3 className="text-lg font-semibold">Feedback:</h3>
                 <p>{aiFeedback.feedback}</p>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold">Improvement Plan:</h3>
-                <p>{aiFeedback.improvementPlan}</p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">Cheat Sheet:</h3>
-                <p>{aiFeedback.cheatSheet}</p>
-              </div>
-              <Button onClick={handleSaveAsPdf}>Save as PDF</Button>
+
+              <Accordion type="single" collapsible>
+                <AccordionItem value="improvement-plan">
+                  <AccordionTrigger>Improvement Plan</AccordionTrigger>
+                  <AccordionContent>
+                    {aiFeedback.improvementPlan}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="cheat-sheet">
+                  <AccordionTrigger>Cheat Sheet</AccordionTrigger>
+                  <AccordionContent>
+                    {aiFeedback.cheatSheet}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              <Button onClick={handleSaveAsPdf}>Save as PDF (Coming Soon)</Button>
             </CardContent>
           </Card>
         )}
       </div>
-       <footer className="mt-8 text-center text-muted-foreground">
+      <footer className="mt-8 text-center text-muted-foreground">
         <p>InterviewPilotDashboard © 2025 InterviewPilot</p>
       </footer>
     </div>
