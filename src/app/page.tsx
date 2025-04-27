@@ -27,18 +27,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-  Download,
-  File,
-  ListOrdered,
-  Sparkle,
-  Text,
-  CheckCircle2,
-} from 'lucide-react';
+import {File, ListOrdered, Sparkle} from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
-import {useEffect} from 'react';
-import {useRouter} from 'next/navigation';
-import {useParams} from 'next/navigation';
 
 interface Company {
   name: string;
@@ -80,7 +70,6 @@ export default function Home() {
   const [aiFeedback, setAiFeedback] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const {toast} = useToast();
-  const router = useRouter();
 
   const handleChange = (e: any) => {
     setInterviewDetails({...interviewDetails, [e.target.name]: e.target.value});
@@ -282,9 +271,9 @@ export default function Home() {
                     <AccordionContent>
                       <ol className="list-decimal pl-5">
                         {aiFeedback.improvementPlan.split('\n').map((step: string, index: number) =>
-                          step.trim() !== '' ? (
+                          step.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').trim() !== '' ? (
                             <li key={index} className="mb-2">
-                              {step}
+                              {step.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').trim()}
                             </li>
                           ) : null
                         )}
@@ -298,9 +287,9 @@ export default function Home() {
                     <AccordionContent>
                       <ol className="list-decimal pl-5">
                         {aiFeedback.cheatSheet.split('\n').map((item: string, index: number) =>
-                          item.trim() !== '' ? (
+                          item.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').trim() !== '' ? (
                             <li key={index} className="mb-2">
-                              {item}
+                              {item.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').trim()}
                             </li>
                           ) : null
                         )}
