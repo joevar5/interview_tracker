@@ -28,8 +28,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import {cn} from '@/lib/utils';
-import {ArrowDown, ArrowUp} from 'lucide-react';
-import {ChartPie} from '@radix-ui/react-icons';
+import {ArrowDown} from 'lucide-react';
 
 interface Company {
   name: string;
