@@ -27,8 +27,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {Badge} from '@/components/ui/badge';
+import {
+  Download,
+  File,
+  ListOrdered,
+  Sparkle,
+  Text,
+  CheckCircle2,
+} from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {useEffect} from 'react';
+import {useRouter} from 'next/navigation';
+import {useParams} from 'next/navigation';
 
 interface Company {
   name: string;
@@ -36,12 +46,12 @@ interface Company {
 }
 
 const predefinedCompanies: Company[] = [
-  {name: 'Amazon', logo: 'https://picsum.photos/id/237/40/40'},
-  {name: 'Google', logo: 'https://picsum.photos/id/238/40/40'},
-  {name: 'Microsoft', logo: 'https://picsum.photos/id/239/40/40'},
-  {name: 'Facebook', logo: 'https://picsum.photos/id/240/40/40'},
-  {name: 'Apple', logo: 'https://picsum.photos/id/241/40/40'},
-  {name: 'Netflix', logo: 'https://picsum.photos/id/242/40/40'},
+  {name: 'Amazon', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg'},
+  {name: 'Google', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg'},
+  {name: 'Microsoft', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg'},
+  {name: 'Facebook', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg'},
+  {name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg'},
+  {name: 'Netflix', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg'},
 ];
 
 const predefinedRounds = ['First Round', 'Technical Interview', 'Final Round'];
@@ -70,6 +80,7 @@ export default function Home() {
   const [aiFeedback, setAiFeedback] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const {toast} = useToast();
+  const router = useRouter();
 
   const handleChange = (e: any) => {
     setInterviewDetails({...interviewDetails, [e.target.name]: e.target.value});
@@ -260,13 +271,13 @@ export default function Home() {
                 <Accordion type="single" collapsible>
                   <AccordionItem value="feedback">
                     <AccordionTrigger>
-                      <Badge className="mr-2">Feedback</Badge>
+                      <Sparkle className="mr-2 h-4 w-4" /> Feedback
                     </AccordionTrigger>
                     <AccordionContent>{aiFeedback.feedback}</AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="improvement-plan">
                     <AccordionTrigger>
-                      <Badge className="mr-2">Improvement Plan</Badge>
+                      <ListOrdered className="mr-2 h-4 w-4" /> Improvement Plan
                     </AccordionTrigger>
                     <AccordionContent>
                       <ol className="list-decimal pl-5">
@@ -282,7 +293,7 @@ export default function Home() {
                   </AccordionItem>
                   <AccordionItem value="cheat-sheet">
                     <AccordionTrigger>
-                      <Badge className="mr-2">Cheat Sheet</Badge>
+                      <File className="mr-2 h-4 w-4" /> Cheat Sheet
                     </AccordionTrigger>
                     <AccordionContent>
                       <ol className="list-decimal pl-5">
