@@ -18,14 +18,10 @@ import {
 } from '@/components/ui/sidebar';
 import {useState, useEffect} from 'react';
 
-// Mock data for common companies
-const commonCompanies = [
-  {name: 'Google', logo: 'https://www.google.com/favicon.ico'},
-  {name: 'Microsoft', logo: 'https://www.microsoft.com/favicon.ico'},
-  {name: 'Amazon', logo: 'https://www.amazon.com/favicon.ico'},
-  {name: 'Facebook', logo: 'https://www.facebook.com/favicon.ico'},
-  {name: 'Apple', logo: 'https://www.apple.com/favicon.ico'},
-];
+interface Company {
+  name: string;
+  logo: string;
+}
 
 export default function Home() {
   const [interviewDetails, setInterviewDetails] = useState({
@@ -36,6 +32,7 @@ export default function Home() {
   });
 
   const [isOtherCompany, setIsOtherCompany] = useState(false);
+  const [companies, setCompanies] = useState<Company[]>([]);
 
   const handleChange = (e: any) => {
     setInterviewDetails({...interviewDetails, [e.target.name]: e.target.value});
@@ -57,11 +54,45 @@ export default function Home() {
     console.log('Interview Details:', interviewDetails);
   };
 
-  // Fetch common companies from an API endpoint (replace with your actual endpoint)
   useEffect(() => {
-    // fetch('/api/common-companies')
-    //   .then(response => response.json())
-    //   .then(data => setCommonCompanies(data));
+    const fetchCompanies = async () => {
+      try {
+        const apiKey = process.env.NEXT_PUBLIC_SERPER_API_KEY;
+        if (!apiKey) {
+          console.error('Serper API key is missing. Please set the NEXT_PUBLIC_SERPER_API_KEY environment variable.');
+          return;
+        }
+        const query = 'list of companies in the world';
+        const apiUrl = `https://google.serper.dev/search?q=${query}`;
+
+        const response = await fetch(apiUrl, {
+          headers: {
+            'X-API-KEY': apiKey,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data && data.organic) {
+          const extractedCompanies: Company[] = data.organic.map((item: any) => ({
+            name: item.title.replace(/ - Crunchbase Company Profile$/, ''), //Cleans up the name from the API
+            logo: item.website, // Use website as a placeholder, refine as needed.
+          }));
+          setCompanies(extractedCompanies);
+        } else {
+          console.warn('No organic results found in the Serper API response.');
+        }
+      } catch (error) {
+        console.error('Failed to fetch companies:', error);
+      }
+    };
+
+    fetchCompanies();
   }, []);
 
   return (
@@ -109,13 +140,15 @@ export default function Home() {
                     <SelectValue placeholder="Select Company" />
                   </SelectTrigger>
                   <SelectContent>
-                    {commonCompanies.map(company => (
+                    {companies.map(company => (
                       <SelectItem key={company.name} value={company.name}>
-                        <img
-                          src={company.logo}
-                          alt={company.name}
-                          className="mr-2 h-5 w-5 rounded-full object-cover"
-                        />
+                        {company.logo && (
+                          <img
+                            src={`https://logo.clearbit.com/${company.logo}`}
+                            alt={company.name}
+                            className="mr-2 h-5 w-5 rounded-full object-cover"
+                          />
+                        )}
                         {company.name}
                       </SelectItem>
                     ))}
