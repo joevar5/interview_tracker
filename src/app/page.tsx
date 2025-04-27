@@ -28,7 +28,6 @@ import {
 } from '@/components/ui/accordion';
 import {CalendarPlus, File, ListOrdered, Sparkle} from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
-import {cn} from '@/lib/utils';
 
 interface Company {
   name: string;
@@ -54,12 +53,6 @@ const predefinedRejectionReasons = [
   'Better candidate found',
 ];
 
-const initialInterviewDetails = {
-  company: '',
-  round: '',
-  rejectionReason: '',
-};
-
 function createGoogleCalendarLink(title: string, description: string): string {
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = encodeURIComponent(description);
@@ -79,6 +72,12 @@ END:VCALENDAR`;
   const dataURL = `data:text/calendar;charset=utf8,${encodeURIComponent(icsContent)}`;
   return dataURL;
 }
+
+const initialInterviewDetails = {
+  company: '',
+  round: '',
+  rejectionReason: '',
+};
 
 export default function Home() {
   const [interviewDetails, setInterviewDetails] = useState(
@@ -187,7 +186,7 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row -mx-4">
+      <div className="flex flex-col gap-4">
         <Card className="bg-secondary w-full">
           <CardHeader>
             <CardTitle>Track Your Interview</CardTitle>
@@ -289,113 +288,111 @@ export default function Home() {
         </Card>
 
         {aiFeedback && (
-          <div className="w-full px-4 mb-4">
-            <Card className="bg-secondary">
-              <CardHeader>
-                <CardTitle>AI Interview Feedback</CardTitle>
-                <CardDescription>
-                  Here's what our AI thinks about your interview:
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="feedback">
+          <Card className="bg-secondary">
+            <CardHeader>
+              <CardTitle>AI Interview Feedback</CardTitle>
+              <CardDescription>
+                Here's what our AI thinks about your interview:
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Accordion type="single" collapsible>
+                <AccordionItem value="feedback">
+                  <AccordionTrigger>
+                    <Sparkle className="mr-2 h-4 w-4" /> Feedback
+                  </AccordionTrigger>
+                  <AccordionContent>{aiFeedback.feedback}</AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="improvement-plan">
+                  <AccordionTrigger>
+                    <ListOrdered className="mr-2 h-4 w-4" /> Improvement Plan
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ol className="list-decimal pl-5">
+                      {aiFeedback.improvementPlan
+                        .map((step: string, index: number) => {
+                          const trimmedStep = step.trim();
+                          return trimmedStep !== '' ? (
+                            <li key={index} className="mb-2">
+                              {trimmedStep}
+                            </li>
+                          ) : null;
+                        })}
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+                {aiFeedback.improvementPlan && (
+                  <AccordionItem value="action-plan">
                     <AccordionTrigger>
-                      <Sparkle className="mr-2 h-4 w-4" /> Feedback
-                    </AccordionTrigger>
-                    <AccordionContent>{aiFeedback.feedback}</AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="improvement-plan">
-                    <AccordionTrigger>
-                      <ListOrdered className="mr-2 h-4 w-4" /> Improvement Plan
+                      <CalendarPlus className="mr-2 h-4 w-4" /> Step-Wise Action Plan
                     </AccordionTrigger>
                     <AccordionContent>
                       <ol className="list-decimal pl-5">
                         {aiFeedback.improvementPlan
                           .map((step: string, index: number) => {
                             const trimmedStep = step.trim();
-                            return trimmedStep !== '' ? (
+                            if (trimmedStep === '') return null;
+
+                            const googleCalendarLink = createGoogleCalendarLink(
+                              `Interview Prep: ${trimmedStep}`,
+                              `Action item from InterviewPilot: ${trimmedStep}`
+                            );
+
+                            const appleCalendarLink = createAppleCalendarLink(
+                              `Interview Prep: ${trimmedStep}`,
+                              `Action item from InterviewPilot: ${trimmedStep}`
+                            );
+
+                            return (
                               <li key={index} className="mb-2">
                                 {trimmedStep}
+                                <div className="mt-2 flex space-x-2">
+                                  <a
+                                    href={googleCalendarLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:underline"
+                                  >
+                                    Add to Google Calendar
+                                  </a>
+                                  <a
+                                    href={appleCalendarLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:underline"
+                                    download="interview_prep.ics"
+                                  >
+                                    Add to Apple Calendar
+                                  </a>
+                                </div>
                               </li>
-                            ) : null;
+                            );
                           })}
                       </ol>
                     </AccordionContent>
                   </AccordionItem>
-                   {aiFeedback.improvementPlan && (
-                    <AccordionItem value="action-plan">
-                      <AccordionTrigger>
-                        <CalendarPlus className="mr-2 h-4 w-4" /> Step-Wise Action Plan
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ol className="list-decimal pl-5">
-                          {aiFeedback.improvementPlan
-                            .map((step: string, index: number) => {
-                              const trimmedStep = step.trim();
-                              if (trimmedStep === '') return null;
-
-                              const googleCalendarLink = createGoogleCalendarLink(
-                                `Interview Prep: ${trimmedStep}`,
-                                `Action item from InterviewPilot: ${trimmedStep}`
-                              );
-
-                              const appleCalendarLink = createAppleCalendarLink(
-                                `Interview Prep: ${trimmedStep}`,
-                                `Action item from InterviewPilot: ${trimmedStep}`
-                              );
-
-                              return (
-                                <li key={index} className="mb-2">
-                                  {trimmedStep}
-                                  <div className="mt-2 flex space-x-2">
-                                    <a
-                                      href={googleCalendarLink}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-blue-500 hover:underline"
-                                    >
-                                      Add to Google Calendar
-                                    </a>
-                                    <a
-                                      href={appleCalendarLink}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-blue-500 hover:underline"
-                                      download="interview_prep.ics"
-                                    >
-                                      Add to Apple Calendar
-                                    </a>
-                                  </div>
-                                </li>
-                              );
-                            })}
-                        </ol>
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-                  <AccordionItem value="cheat-sheet">
-                    <AccordionTrigger>
-                      <File className="mr-2 h-4 w-4" /> Cheat Sheet
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <ol className="list-decimal pl-5">
-                        {aiFeedback.cheatSheet
-                          .map((item: string, index: number) => {
-                            const trimmedItem = item.trim();
-                            return trimmedItem !== '' ? (
-                              <li key={index} className="mb-2">
-                                {trimmedItem}
-                              </li>
-                            ) : null;
-                          })}
-                      </ol>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </CardContent>
-            </Card>
-          </div>
+                )}
+                <AccordionItem value="cheat-sheet">
+                  <AccordionTrigger>
+                    <File className="mr-2 h-4 w-4" /> Cheat Sheet
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ol className="list-decimal pl-5">
+                      {aiFeedback.cheatSheet
+                        .map((item: string, index: number) => {
+                          const trimmedItem = item.trim();
+                          return trimmedItem !== '' ? (
+                            <li key={index} className="mb-2">
+                              {trimmedItem}
+                            </li>
+                          ) : null;
+                        })}
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </CardContent>
+          </Card>
         )}
       </div>
 
@@ -405,3 +402,4 @@ export default function Home() {
     </div>
   );
 }
+
