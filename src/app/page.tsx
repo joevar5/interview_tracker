@@ -270,13 +270,19 @@ export default function Home() {
                     </AccordionTrigger>
                     <AccordionContent>
                       <ol className="list-decimal pl-5">
-                        {aiFeedback.improvementPlan.split('\n').map((step: string, index: number) =>
-                          step.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').trim() !== '' ? (
-                            <li key={index} className="mb-2">
-                              {step.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').trim()}
-                            </li>
-                          ) : null
-                        )}
+                        {aiFeedback.improvementPlan
+                          .split('\n')
+                          .map((step: string, index: number) => {
+                            const trimmedStep = step
+                              .replace(/^\d+\.\s*/, '')
+                              .replace(/\*\*(.*?)\*\*/g, '$1')
+                              .trim();
+                            return trimmedStep !== '' ? (
+                              <li key={index} className="mb-2">
+                                {trimmedStep}
+                              </li>
+                            ) : null;
+                          })}
                       </ol>
                     </AccordionContent>
                   </AccordionItem>
@@ -286,13 +292,19 @@ export default function Home() {
                     </AccordionTrigger>
                     <AccordionContent>
                       <ol className="list-decimal pl-5">
-                        {aiFeedback.cheatSheet.split('\n').map((item: string, index: number) =>
-                          item.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').trim() !== '' ? (
-                            <li key={index} className="mb-2">
-                              {item.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').trim()}
-                            </li>
-                          ) : null
-                        )}
+                        {aiFeedback.cheatSheet
+                          .split('\n')
+                          .map((item: string, index: number) => {
+                            const trimmedItem = item
+                              .replace(/^\d+\.\s*/, '')
+                              .replace(/\*\*(.*?)\*\*/g, '$1')
+                              .trim();
+                            return trimmedItem !== '' ? (
+                              <li key={index} className="mb-2">
+                                {trimmedItem}
+                              </li>
+                            ) : null;
+                          })}
                       </ol>
                     </AccordionContent>
                   </AccordionItem>
