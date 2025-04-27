@@ -26,7 +26,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {CalendarPlus, File, ListOrdered, Sparkle} from 'lucide-react';
+import {CalendarPlus, ListOrdered, Sparkle} from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 
 interface Company {
@@ -140,22 +140,6 @@ export default function Home() {
           'Review Common Behavioral Questions: Research common behavioral interview questions, such as "Tell me about a time you failed," "Describe a time you had to overcome a challenge," or "Give an example of a time you worked effectively in a team." Prepare answers using your STAR stories.',
           'Mock Interviews: Conduct mock interviews with a friend, mentor, or career coach, focusing specifically on behavioral questions. Record yourself to identify areas for improvement in your communication style, body language, and storytelling ability.',
           'Reflect and Refine: After each practice session or mock interview, reflect on your performance and identify areas where you can improve. Refine your STAR stories and your delivery based on the feedback you receive.',
-        ],
-        cheatSheet: [
-          'STAR Method:* Situation: Briefly describe the context of the story.',
-          'Task: Explain what you needed to achieve.',
-          'Action: Detail the specific actions you took.',
-          'Result: Highlight the positive outcomes of your actions.',
-          'Key Behavioral Areas for Google:* Googleyness: Adaptability, comfort with ambiguity, bias for action.',
-          'Leadership: Taking initiative, influencing others, teamwork.',
-          'Problem Solving: Analytical skills, critical thinking, innovation.',
-          'Ownership: Accountability, taking responsibility, driving results.',
-          'Tips:* Prepare stories beforehand covering various situations (conflict, failure, success, teamwork).',
-          'Quantify your results whenever possible (e.g., "Reduced costs by 15%").',
-          'Be honest and authentic.',
-          'Listen carefully to the question and answer directly.',
-          'Don\'t be afraid to take a moment to think before answering.',
-          'Practice with a friend or mentor.',
         ],
       };
 
@@ -372,24 +356,6 @@ export default function Home() {
                     </AccordionContent>
                   </AccordionItem>
                 )}
-                <AccordionItem value="cheat-sheet">
-                  <AccordionTrigger>
-                    <File className="mr-2 h-4 w-4" /> Cheat Sheet
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ol className="list-decimal pl-5">
-                      {aiFeedback.cheatSheet
-                        .map((item: string, index: number) => {
-                          const trimmedItem = item.trim();
-                          return trimmedItem !== '' ? (
-                            <li key={index} className="mb-2">
-                              {trimmedItem}
-                            </li>
-                          ) : null;
-                        })}
-                    </ol>
-                  </AccordionContent>
-                </AccordionItem>
               </Accordion>
             </CardContent>
           </Card>
@@ -402,4 +368,5 @@ export default function Home() {
     </div>
   );
 }
+
 
