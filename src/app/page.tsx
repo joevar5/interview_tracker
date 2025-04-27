@@ -32,16 +32,16 @@ import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 
 interface Company {
   name: string;
-  logo?: string;
+  logo: string;
 }
 
 const predefinedCompanies: Company[] = [
-  {name: 'Amazon', logo: 'https://picsum.photos/40/40'},
-  {name: 'Google', logo: 'https://picsum.photos/40/40'},
-  {name: 'Microsoft', logo: 'https://picsum.photos/40/40'},
-  {name: 'Facebook', logo: 'https://picsum.photos/40/40'},
-  {name: 'Apple', logo: 'https://picsum.photos/40/40'},
-  {name: 'Netflix', logo: 'https://picsum.photos/40/40'},
+  {name: 'Amazon', logo: 'https://picsum.photos/id/237/40/40'},
+  {name: 'Google', logo: 'https://picsum.photos/id/238/40/40'},
+  {name: 'Microsoft', logo: 'https://picsum.photos/id/239/40/40'},
+  {name: 'Facebook', logo: 'https://picsum.photos/id/240/40/40'},
+  {name: 'Apple', logo: 'https://picsum.photos/id/241/40/40'},
+  {name: 'Netflix', logo: 'https://picsum.photos/id/242/40/40'},
 ];
 
 const predefinedRounds = ['First Round', 'Technical Interview', 'Final Round'];
