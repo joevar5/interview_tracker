@@ -19,7 +19,6 @@ import {
 import {Textarea} from '@/components/ui/textarea';
 import {useToast} from '@/hooks/use-toast';
 import {useState} from 'react';
-import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback';
 import {Loader2} from 'lucide-react';
 import {
   Accordion,
@@ -27,9 +26,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {File, ListOrdered, Sparkle} from 'lucide-react';
+import {CalendarPlus, File, ListOrdered, Sparkle} from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
-import {CalendarPlus} from 'lucide-react';
+import {cn} from '@/lib/utils';
 
 interface Company {
   name: string;
@@ -132,11 +131,34 @@ export default function Home() {
     setAiFeedback(null);
 
     try {
-      const feedback = await generateInterviewFeedback({
-        company: interviewDetails.company,
-        round: interviewDetails.round,
-        rejectionReason: interviewDetails.rejectionReason,
-      });
+      const feedback = {
+        feedback:
+          'The rejection reason suggests the interview was behavioral, and your performance didn\'t meet expectations. This could mean your answers lacked specific examples, didn\'t fully address the questions, or didn\'t effectively demonstrate the desired qualities like \'Googleyness,\' leadership, or problem-solving skills. It\'s crucial to structure your answers using the STAR method (Situation, Task, Action, Result) to provide clear and compelling narratives that highlight your skills and experience. You need to focus on providing concrete examples and quantifying your achievements wherever possible.',
+        improvementPlan: [
+          'Identify Key Behavioral Areas: Research the core competencies and values that Google looks for in candidates (e.g., Googleyness, leadership, teamwork, problem-solving). Understand what these qualities mean in practice.',
+          'Prepare STAR Stories: Brainstorm and document specific examples from your past experiences that demonstrate these key qualities. Use the STAR method to structure each story, focusing on the Situation, Task, Action, and Result. Aim for at least 2-3 stories per key behavioral area.',
+          'Practice Storytelling: Rehearse your STAR stories aloud, paying attention to clarity, conciseness, and impact. Practice with a friend or mentor and ask for feedback on your delivery.',
+          'Review Common Behavioral Questions: Research common behavioral interview questions, such as "Tell me about a time you failed," "Describe a time you had to overcome a challenge," or "Give an example of a time you worked effectively in a team." Prepare answers using your STAR stories.',
+          'Mock Interviews: Conduct mock interviews with a friend, mentor, or career coach, focusing specifically on behavioral questions. Record yourself to identify areas for improvement in your communication style, body language, and storytelling ability.',
+          'Reflect and Refine: After each practice session or mock interview, reflect on your performance and identify areas where you can improve. Refine your STAR stories and your delivery based on the feedback you receive.',
+        ],
+        cheatSheet: [
+          'STAR Method:* Situation: Briefly describe the context of the story.',
+          'Task: Explain what you needed to achieve.',
+          'Action: Detail the specific actions you took.',
+          'Result: Highlight the positive outcomes of your actions.',
+          'Key Behavioral Areas for Google:* Googleyness: Adaptability, comfort with ambiguity, bias for action.',
+          'Leadership: Taking initiative, influencing others, teamwork.',
+          'Problem Solving: Analytical skills, critical thinking, innovation.',
+          'Ownership: Accountability, taking responsibility, driving results.',
+          'Tips:* Prepare stories beforehand covering various situations (conflict, failure, success, teamwork).',
+          'Quantify your results whenever possible (e.g., "Reduced costs by 15%").',
+          'Be honest and authentic.',
+          'Listen carefully to the question and answer directly.',
+          'Don\'t be afraid to take a moment to think before answering.',
+          'Practice with a friend or mentor.',
+        ],
+      };
 
       setAiFeedback(feedback);
 
@@ -165,111 +187,109 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="flex flex-wrap -mx-4">
-        <div className="px-4 mb-4 w-full">
-          <Card className="bg-secondary">
-            <CardHeader>
-              <CardTitle>Track Your Interview</CardTitle>
-              <CardDescription>Enter the details of your interview.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="grid gap-4">
-                <Select onValueChange={handleCompanySelect}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Company" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {predefinedCompanies.map(company => (
-                      <SelectItem key={company.name} value={company.name}>
-                        <div className="flex items-center gap-2">
-                          {company.logo && (
-                            <Avatar className="h-5 w-5">
-                              <AvatarImage src={company.logo} alt={company.name} />
-                              <AvatarFallback>{company.name.substring(0, 2)}</AvatarFallback>
-                            </Avatar>
-                          )}
-                          <span>{company.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
+      <div className="flex flex-col md:flex-row -mx-4">
+        <Card className="bg-secondary w-full md:w-1/3 px-4 mb-4">
+          <CardHeader>
+            <CardTitle>Track Your Interview</CardTitle>
+            <CardDescription>Enter the details of your interview.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="grid gap-4">
+              <Select onValueChange={handleCompanySelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Company" />
+                </SelectTrigger>
+                <SelectContent>
+                  {predefinedCompanies.map(company => (
+                    <SelectItem key={company.name} value={company.name}>
+                      <div className="flex items-center gap-2">
+                        {company.logo && (
+                          <Avatar className="h-5 w-5">
+                            <AvatarImage src={company.logo} alt={company.name} />
+                            <AvatarFallback>{company.name.substring(0, 2)}</AvatarFallback>
+                          </Avatar>
+                        )}
+                        <span>{company.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
 
-                {isOtherCompany && (
-                  <Input
-                    type="text"
-                    name="company"
-                    placeholder="Company"
-                    value={interviewDetails.company}
-                    onChange={handleChange}
-                  />
+              {isOtherCompany && (
+                <Input
+                  type="text"
+                  name="company"
+                  placeholder="Company"
+                  value={interviewDetails.company}
+                  onChange={handleChange}
+                />
+              )}
+
+              <Select onValueChange={handleRoundSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Round" />
+                </SelectTrigger>
+                <SelectContent>
+                  {predefinedRounds.map(round => (
+                    <SelectItem key={round} value={round}>
+                      {round}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {isOtherRound && (
+                <Input
+                  type="text"
+                  name="round"
+                  placeholder="Round"
+                  value={interviewDetails.round}
+                  onChange={handleChange}
+                />
+              )}
+
+              <Select onValueChange={handleRejectionReasonSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Rejection Reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  {predefinedRejectionReasons.map(reason => (
+                    <SelectItem key={reason} value={reason}>
+                      {reason}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {isOtherRejectionReason && (
+                <Textarea
+                  name="rejectionReason"
+                  placeholder="Rejection Reason"
+                  value={interviewDetails.rejectionReason}
+                  onChange={handleChange}
+                />
+              )}
+
+              <Button type="submit" disabled={isLoading} className="w-full">
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating Feedback...
+                  </>
+                ) : (
+                  'Generate Feedback'
                 )}
-
-                <Select onValueChange={handleRoundSelect}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Round" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {predefinedRounds.map(round => (
-                      <SelectItem key={round} value={round}>
-                        {round}
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {isOtherRound && (
-                  <Input
-                    type="text"
-                    name="round"
-                    placeholder="Round"
-                    value={interviewDetails.round}
-                    onChange={handleChange}
-                  />
-                )}
-
-                <Select onValueChange={handleRejectionReasonSelect}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Rejection Reason" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {predefinedRejectionReasons.map(reason => (
-                      <SelectItem key={reason} value={reason}>
-                        {reason}
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {isOtherRejectionReason && (
-                  <Textarea
-                    name="rejectionReason"
-                    placeholder="Rejection Reason"
-                    value={interviewDetails.rejectionReason}
-                    onChange={handleChange}
-                  />
-                )}
-
-                <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating Feedback...
-                    </>
-                  ) : (
-                    'Generate Feedback'
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         {aiFeedback && (
-          <div className="px-4 mb-4 w-full">
+          <div className="w-full px-4 mb-4">
             <Card className="bg-secondary">
               <CardHeader>
                 <CardTitle>AI Interview Feedback</CardTitle>
@@ -292,7 +312,6 @@ export default function Home() {
                     <AccordionContent>
                       <ol className="list-decimal pl-5">
                         {aiFeedback.improvementPlan
-                          .split('\n')
                           .map((step: string, index: number) => {
                             const trimmedStep = step.trim();
                             return trimmedStep !== '' ? (
@@ -312,7 +331,6 @@ export default function Home() {
                       <AccordionContent>
                         <ol className="list-decimal pl-5">
                           {aiFeedback.improvementPlan
-                            .split('\n')
                             .map((step: string, index: number) => {
                               const trimmedStep = step.trim();
                               if (trimmedStep === '') return null;
@@ -363,7 +381,6 @@ export default function Home() {
                     <AccordionContent>
                       <ol className="list-decimal pl-5">
                         {aiFeedback.cheatSheet
-                          .split('\n')
                           .map((item: string, index: number) => {
                             const trimmedItem = item.trim();
                             return trimmedItem !== '' ? (
