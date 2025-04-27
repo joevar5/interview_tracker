@@ -22,15 +22,16 @@ import {useState} from 'react';
 import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback';
 import {Loader2} from 'lucide-react';
 import {Badge} from '@/components/ui/badge';
+import {cn} from '@/lib/utils';
 
 interface Company {
   name: string;
 }
 
 const predefinedCompanies: Company[] = [
+  {name: 'Amazon'},
   {name: 'Google'},
   {name: 'Microsoft'},
-  {name: 'Amazon'},
   {name: 'Facebook'},
   {name: 'Apple'},
   {name: 'Netflix'},
@@ -39,8 +40,8 @@ const predefinedCompanies: Company[] = [
 const predefinedRounds = ['First Round', 'Technical Interview', 'Final Round'];
 
 const predefinedRejectionReasons = [
-  'Lack of experience',
   'Poor communication skills',
+  'Lack of experience',
   'Not a good fit for the company culture',
   'Technical skills lacking',
   'Better candidate found',
@@ -59,7 +60,7 @@ export default function Home() {
   const [isOtherCompany, setIsOtherCompany] = useState(false);
   const [isOtherRound, setIsOtherRound] = useState(false);
   const [isOtherRejectionReason, setIsOtherRejectionReason] = useState(false);
-  const [aiFeedback, setAiFeedback, ] = useState<any>(null);
+  const [aiFeedback, setAiFeedback] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const {toast} = useToast();
 
@@ -137,7 +138,6 @@ export default function Home() {
       return;
     }
 
-    // Implement your PDF saving logic here
     toast({
       title: 'Feature in Progress',
       description: 'Saving to PDF is coming soon!',
@@ -146,18 +146,15 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4">
-      {/* Heading */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-semibold">InterviewPilot Dashboard</h1>
+        <h1 className="text-2xl font-semibold">InterviewPilot Dashboard</h1>
         <p className="text-muted-foreground">
           Track your interview progress and get AI-powered feedback.
         </p>
       </div>
 
-      {/* Interview Tracking and AI Feedback Section */}
-      <div className="flex flex-row gap-4">
-        {/* Interview Tracking Card */}
-        <Card className="bg-secondary w-1/3">
+      <div className="flex flex-col md:flex-row gap-4">
+        <Card className="bg-secondary w-full md:w-1/3">
           <CardHeader>
             <CardTitle>Track Your Interview</CardTitle>
             <CardDescription>Enter the details of your interview.</CardDescription>
@@ -249,9 +246,8 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* AI Feedback Card */}
         {aiFeedback && (
-          <Card className="bg-secondary w-2/3">
+          <Card className="bg-secondary w-full md:w-2/3">
             <CardHeader>
               <CardTitle>AI Interview Feedback</CardTitle>
               <CardDescription>Here's what our AI thinks about your interview:</CardDescription>
