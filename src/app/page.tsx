@@ -9,7 +9,8 @@ import {useToast} from '@/hooks/use-toast';
 import {useState} from 'react';
 import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback';
 import {Loader2} from 'lucide-react';
-import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 interface Company {
   name: string;
@@ -114,15 +115,60 @@ export default function Home() {
     }
   };
 
-  const data = [
-    {name: 'Google', interviews: 4000,  amt: 2400},
-    {name: 'Microsoft', interviews: 3000, amt: 2210},
-    {name: 'Amazon', interviews: 2000,  amt: 2290},
-    {name: 'Facebook', interviews: 2780,  amt: 2000},
-    {name: 'Apple', interviews: 1890,  amt: 2181},
-    {name: 'Netflix', interviews: 2390,  amt: 2500},
-    {name: 'Other', interviews: 3490,  amt: 2100},
-  ];
+  const handleSaveAsPdf = () => {
+    if (!aiFeedback) {
+      toast({
+        variant: 'destructive',
+        title: 'No Feedback',
+        description: 'Please generate feedback first.',
+      });
+      return;
+    }
+
+    const doc = new jsPDF();
+    doc.text('Interview Feedback', 10, 10);
+    doc.setFontSize(12);
+    let y = 20;
+
+    doc.text(`Company: ${interviewDetails.company}`, 10, y);
+    y += 10;
+    doc.text(`Round: ${interviewDetails.round}`, 10, y);
+    y += 10;
+    doc.text(`Rejection Reason: ${interviewDetails.rejectionReason}`, 10, y);
+    y += 10;
+
+    doc.text('Feedback:', 10, y);
+    y += 10;
+    const feedbackLines = doc.splitTextToSize(aiFeedback.feedback, 180);
+    feedbackLines.forEach((line: string) => {
+      doc.text(line, 10, y);
+      y += 5;
+    });
+    y += 5;
+
+    doc.text('Improvement Plan:', 10, y);
+    y += 10;
+    const improvementPlanLines = doc.splitTextToSize(aiFeedback.improvementPlan, 180);
+    improvementPlanLines.forEach((line: string) => {
+      doc.text(line, 10, y);
+      y += 5;
+    });
+    y += 5;
+
+    doc.text('Cheat Sheet:', 10, y);
+    y += 10;
+    const cheatSheetLines = doc.splitTextToSize(aiFeedback.cheatSheet, 180);
+    cheatSheetLines.forEach((line: string) => {
+      doc.text(line, 10, y);
+      y += 5;
+    });
+
+    doc.save('interview_feedback.pdf');
+    toast({
+      title: 'PDF Saved!',
+      description: 'Interview feedback saved as PDF.',
+    });
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -254,29 +300,10 @@ export default function Home() {
                 <h3 className="text-lg font-semibold">Cheat Sheet:</h3>
                 <p>{aiFeedback.cheatSheet}</p>
               </div>
+              <Button onClick={handleSaveAsPdf}>Save as PDF</Button>
             </CardContent>
           </Card>
         )}
-      </div>
-
-      {/* Interview Statistics Visualization */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Interview Statistics</h2>
-        <Card className="bg-secondary">
-          <CardContent>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="interviews" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-            <p className="text-sm text-muted-foreground mt-2 text-center">Number of interviews per company.</p>
-          </CardContent>
-        </Card>
       </div>
        <footer className="mt-8 text-center text-muted-foreground">
         <p>InterviewPilotDashboard © 2025 InterviewPilot</p>
