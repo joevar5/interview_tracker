@@ -16,6 +16,7 @@ import {
   YAxis,
 } from 'recharts';
 import {useState} from 'react';
+import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback'; // Import the function
 
 interface Company {
   name: string;
