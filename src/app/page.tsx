@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/accordion';
 import {File, ListOrdered, Sparkle} from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {CalendarPlus} from 'lucide-react';
 
 interface Company {
   name: string;
@@ -59,6 +60,26 @@ const initialInterviewDetails = {
   round: '',
   rejectionReason: '',
 };
+
+function createGoogleCalendarLink(title: string, description: string): string {
+  const encodedTitle = encodeURIComponent(title);
+  const encodedDescription = encodeURIComponent(description);
+  const googleCalendarURL = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodedTitle}&details=${encodedDescription}`;
+  return googleCalendarURL;
+}
+
+function createAppleCalendarLink(title: string, description: string): string {
+  const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${title}
+DESCRIPTION:${description}
+END:VEVENT
+END:VCALENDAR`;
+
+  const dataURL = `data:text/calendar;charset=utf8,${encodeURIComponent(icsContent)}`;
+  return dataURL;
+}
 
 export default function Home() {
   const [interviewDetails, setInterviewDetails] = useState(
@@ -273,10 +294,7 @@ export default function Home() {
                         {aiFeedback.improvementPlan
                           .split('\n')
                           .map((step: string, index: number) => {
-                            const trimmedStep = step
-                              .replace(/^\d+\.\s*/, '')
-                              .replace(/\*\*(.*?)\*\*/g, '$1')
-                              .trim();
+                            const trimmedStep = step.trim();
                             return trimmedStep !== '' ? (
                               <li key={index} className="mb-2">
                                 {trimmedStep}
@@ -286,6 +304,58 @@ export default function Home() {
                       </ol>
                     </AccordionContent>
                   </AccordionItem>
+                   {aiFeedback.improvementPlan && (
+                    <AccordionItem value="action-plan">
+                      <AccordionTrigger>
+                        <CalendarPlus className="mr-2 h-4 w-4" /> Step-Wise Action Plan
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ol className="list-decimal pl-5">
+                          {aiFeedback.improvementPlan
+                            .split('\n')
+                            .map((step: string, index: number) => {
+                              const trimmedStep = step.trim();
+                              if (trimmedStep === '') return null;
+
+                              const googleCalendarLink = createGoogleCalendarLink(
+                                `Interview Prep: ${trimmedStep}`,
+                                `Action item from InterviewPilot: ${trimmedStep}`
+                              );
+
+                              const appleCalendarLink = createAppleCalendarLink(
+                                `Interview Prep: ${trimmedStep}`,
+                                `Action item from InterviewPilot: ${trimmedStep}`
+                              );
+
+                              return (
+                                <li key={index} className="mb-2">
+                                  {trimmedStep}
+                                  <div className="mt-2 flex space-x-2">
+                                    <a
+                                      href={googleCalendarLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-500 hover:underline"
+                                    >
+                                      Add to Google Calendar
+                                    </a>
+                                    <a
+                                      href={appleCalendarLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-500 hover:underline"
+                                      download="interview_prep.ics"
+                                    >
+                                      Add to Apple Calendar
+                                    </a>
+                                  </div>
+                                </li>
+                              );
+                            })}
+                        </ol>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
                   <AccordionItem value="cheat-sheet">
                     <AccordionTrigger>
                       <File className="mr-2 h-4 w-4" /> Cheat Sheet
@@ -295,10 +365,7 @@ export default function Home() {
                         {aiFeedback.cheatSheet
                           .split('\n')
                           .map((item: string, index: number) => {
-                            const trimmedItem = item
-                              .replace(/^\d+\.\s*/, '')
-                              .replace(/\*\*(.*?)\*\*/g, '$1')
-                              .trim();
+                            const trimmedItem = item.trim();
                             return trimmedItem !== '' ? (
                               <li key={index} className="mb-2">
                                 {trimmedItem}
