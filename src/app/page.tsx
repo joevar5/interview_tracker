@@ -20,11 +20,11 @@ import {useState, useEffect} from 'react';
 
 // Mock data for common companies
 const commonCompanies = [
-  {name: 'Google', logo: 'https://picsum.photos/40/40'},
-  {name: 'Microsoft', logo: 'https://picsum.photos/40/40'},
-  {name: 'Amazon', logo: 'https://picsum.photos/40/40'},
-  {name: 'Facebook', logo: 'https://picsum.photos/40/40'},
-  {name: 'Apple', logo: 'https://picsum.photos/40/40'},
+  {name: 'Google', logo: 'https://www.google.com/favicon.ico'},
+  {name: 'Microsoft', logo: 'https://www.microsoft.com/favicon.ico'},
+  {name: 'Amazon', logo: 'https://www.amazon.com/favicon.ico'},
+  {name: 'Facebook', logo: 'https://www.facebook.com/favicon.ico'},
+  {name: 'Apple', logo: 'https://www.apple.com/favicon.ico'},
 ];
 
 export default function Home() {
