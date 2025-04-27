@@ -15,7 +15,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 
 interface Company {
   name: string;
@@ -32,6 +32,15 @@ const data = [
   {name: 'Round 7', uv: 3490, pv: 4300, amt: 2100},
 ];
 
+const predefinedCompanies: Company[] = [
+  {name: 'Google', logo: 'google.com'},
+  {name: 'Microsoft', logo: 'microsoft.com'},
+  {name: 'Amazon', logo: 'amazon.com'},
+  {name: 'Facebook', logo: 'facebook.com'},
+  {name: 'Apple', logo: 'apple.com'},
+  {name: 'Netflix', logo: 'netflix.com'},
+];
+
 export default function Home() {
   const [interviewDetails, setInterviewDetails] = useState({
     company: '',
@@ -40,7 +49,7 @@ export default function Home() {
   });
 
   const [isOtherCompany, setIsOtherCompany] = useState(false);
-  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companies, setCompanies] = useState<Company[]>(predefinedCompanies);
   const [aiFeedback, setAiFeedback] = useState<any>(null);
   const {toast} = useToast();
 
@@ -62,7 +71,6 @@ export default function Home() {
     e.preventDefault();
 
     try {
-      // Ensure generateInterviewFeedback is correctly typed to handle async calls
       const feedback = await generateInterviewFeedback({
         company: interviewDetails.company,
         round: interviewDetails.round,
@@ -84,47 +92,6 @@ export default function Home() {
       });
     }
   };
-
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      const apiKey = process.env.NEXT_PUBLIC_SERPER_API_KEY;
-      if (!apiKey) {
-        console.error('Serper API key is missing. Please set the NEXT_PUBLIC_SERPER_API_KEY environment variable.');
-        return;
-      }
-      try {
-        const query = 'list of companies in the world';
-        const apiUrl = `https://google.serper.dev/search?q=${query}`;
-
-        const response = await fetch(apiUrl, {
-          headers: {
-            'X-API-KEY': apiKey,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data && data.organic) {
-          const extractedCompanies: Company[] = data.organic.map((item: any) => ({
-            name: item.title.replace(/ - Crunchbase Company Profile$/, ''), //Cleans up the name from the API
-            logo: item.website, // Use website as a placeholder, refine as needed.
-          }));
-          setCompanies(extractedCompanies);
-        } else {
-          console.warn('No organic results found in the Serper API response.');
-        }
-      } catch (error) {
-        console.error('Failed to fetch companies:', error);
-      }
-    };
-
-    fetchCompanies();
-  }, []);
 
   return (
     <div className="container mx-auto p-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
