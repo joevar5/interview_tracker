@@ -28,7 +28,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import {cn} from '@/lib/utils';
-import {ArrowDown} from 'lucide-react';
+import {Badge} from '@/components/ui/badge';
 
 interface Company {
   name: string;
@@ -51,6 +51,7 @@ const predefinedRejectionReasons = [
   'Not a good fit for the company culture',
   'Technical skills lacking',
   'Better candidate found',
+  'I think it is behvarial round',
 ];
 
 const initialInterviewDetails = {
@@ -134,13 +135,6 @@ export default function Home() {
     }
   };
 
-  const handleSaveAsPdf = () => {
-    toast({
-      title: 'Feature in Progress',
-      description: 'Saving to PDF is coming soon!',
-    });
-  };
-
   return (
     <div className="container mx-auto p-4">
       <div className="text-center mb-8">
@@ -150,154 +144,157 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="grid gap-4">
-        <Card className="bg-secondary">
-          <CardHeader>
-            <CardTitle>Track Your Interview</CardTitle>
-            <CardDescription>Enter the details of your interview.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <Select onValueChange={handleCompanySelect}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Company" />
-                </SelectTrigger>
-                <SelectContent>
-                  {predefinedCompanies.map(company => (
-                    <SelectItem key={company.name} value={company.name}>
-                      {company.name}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {isOtherCompany && (
-                <Input
-                  type="text"
-                  name="company"
-                  placeholder="Company"
-                  value={interviewDetails.company}
-                  onChange={handleChange}
-                />
-              )}
-
-              <Select onValueChange={handleRoundSelect}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Round" />
-                </SelectTrigger>
-                <SelectContent>
-                  {predefinedRounds.map(round => (
-                    <SelectItem key={round} value={round}>
-                      {round}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {isOtherRound && (
-                <Input
-                  type="text"
-                  name="round"
-                  placeholder="Round"
-                  value={interviewDetails.round}
-                  onChange={handleChange}
-                />
-              )}
-
-              <Select onValueChange={handleRejectionReasonSelect}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Rejection Reason" />
-                </SelectTrigger>
-                <SelectContent>
-                  {predefinedRejectionReasons.map(reason => (
-                    <SelectItem key={reason} value={reason}>
-                      {reason}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {isOtherRejectionReason && (
-                <Textarea
-                  name="rejectionReason"
-                  placeholder="Rejection Reason"
-                  value={interviewDetails.rejectionReason}
-                  onChange={handleChange}
-                />
-              )}
-
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating Feedback...
-                  </>
-                ) : (
-                  'Generate Feedback'
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        {aiFeedback && (
+      <div className="flex flex-wrap -mx-4">
+        <div className="px-4 mb-4 w-full">
           <Card className="bg-secondary">
             <CardHeader>
-              <CardTitle>AI Interview Feedback</CardTitle>
-              <CardDescription>Here's what our AI thinks about your interview:</CardDescription>
+              <CardTitle>Track Your Interview</CardTitle>
+              <CardDescription>Enter the details of your interview.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Accordion type="single" collapsible>
-                <AccordionItem value="feedback">
-                  <AccordionTrigger>
-                    Feedback
-                    <ArrowDown className="h-4 w-4" />
-                  </AccordionTrigger>
-                  <AccordionContent>{aiFeedback.feedback}</AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="improvement-plan">
-                  <AccordionTrigger>
-                    Improvement Plan
-                    <ArrowDown className="h-4 w-4" />
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ol className="list-decimal pl-5">
-                      {aiFeedback.improvementPlan.split('\n').map((step: string, index: number) =>
-                        step.trim() !== '' ? (
-                          <li key={index} className="mb-2">
-                            {step}
-                          </li>
-                        ) : null
-                      )}
-                    </ol>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="cheat-sheet">
-                  <AccordionTrigger>
-                    Cheat Sheet
-                    <ArrowDown className="h-4 w-4" />
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ol className="list-decimal pl-5">
-                      {aiFeedback.cheatSheet.split('\n').map((item: string, index: number) =>
-                        item.trim() !== '' ? (
-                          <li key={index} className="mb-2">
-                            {item}
-                          </li>
-                        ) : null
-                      )}
-                    </ol>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-              <Button onClick={handleSaveAsPdf}>Save as PDF (Coming Soon)</Button>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="grid gap-4">
+                <Select onValueChange={handleCompanySelect}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Company" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {predefinedCompanies.map(company => (
+                      <SelectItem key={company.name} value={company.name}>
+                        {company.name}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {isOtherCompany && (
+                  <Input
+                    type="text"
+                    name="company"
+                    placeholder="Company"
+                    value={interviewDetails.company}
+                    onChange={handleChange}
+                  />
+                )}
+
+                <Select onValueChange={handleRoundSelect}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Round" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {predefinedRounds.map(round => (
+                      <SelectItem key={round} value={round}>
+                        {round}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {isOtherRound && (
+                  <Input
+                    type="text"
+                    name="round"
+                    placeholder="Round"
+                    value={interviewDetails.round}
+                    onChange={handleChange}
+                  />
+                )}
+
+                <Select onValueChange={handleRejectionReasonSelect}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Rejection Reason" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {predefinedRejectionReasons.map(reason => (
+                      <SelectItem key={reason} value={reason}>
+                        {reason}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {isOtherRejectionReason && (
+                  <Textarea
+                    name="rejectionReason"
+                    placeholder="Rejection Reason"
+                    value={interviewDetails.rejectionReason}
+                    onChange={handleChange}
+                  />
+                )}
+
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating Feedback...
+                    </>
+                  ) : (
+                    'Generate Feedback'
+                  )}
+                </Button>
+              </form>
             </CardContent>
           </Card>
+        </div>
+
+        {aiFeedback && (
+          <div className="px-4 mb-4 w-full">
+            <Card className="bg-secondary">
+              <CardHeader>
+                <CardTitle>AI Interview Feedback</CardTitle>
+                <CardDescription>
+                  Here's what our AI thinks about your interview:
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="feedback">
+                    <AccordionTrigger>
+                      <Badge className="mr-2">Feedback</Badge>
+                    </AccordionTrigger>
+                    <AccordionContent>{aiFeedback.feedback}</AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="improvement-plan">
+                    <AccordionTrigger>
+                      <Badge className="mr-2">Improvement Plan</Badge>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <ol className="list-decimal pl-5">
+                        {aiFeedback.improvementPlan.split('\n').map((step: string, index: number) =>
+                          step.trim() !== '' ? (
+                            <li key={index} className="mb-2">
+                              {step}
+                            </li>
+                          ) : null
+                        )}
+                      </ol>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="cheat-sheet">
+                    <AccordionTrigger>
+                      <Badge className="mr-2">Cheat Sheet</Badge>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <ol className="list-decimal pl-5">
+                        {aiFeedback.cheatSheet.split('\n').map((item: string, index: number) =>
+                          item.trim() !== '' ? (
+                            <li key={index} className="mb-2">
+                              {item}
+                            </li>
+                          ) : null
+                        )}
+                      </ol>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
+
       <footer className="mt-8 text-center text-muted-foreground">
         <p>InterviewPilotDashboard © 2025 InterviewPilot</p>
       </footer>
