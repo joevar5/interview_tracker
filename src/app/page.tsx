@@ -4,6 +4,8 @@ import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Input} from '@/components/ui/input';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Textarea} from '@/components/ui/textarea';
+import {useToast} from '@/hooks/use-toast';
 import {
   Sidebar,
   SidebarContent,
@@ -16,6 +18,7 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+import {generateInterviewFeedback, GenerateInterviewFeedbackOutput} from '@/ai/flows/generate-interview-feedback';
 import {useState, useEffect} from 'react';
 
 interface Company {
@@ -27,12 +30,13 @@ export default function Home() {
   const [interviewDetails, setInterviewDetails] = useState({
     company: '',
     round: '',
-    status: '',
     rejectionReason: '',
   });
 
   const [isOtherCompany, setIsOtherCompany] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [aiFeedback, setAiFeedback] = useState<GenerateInterviewFeedbackOutput | null>(null);
+  const {toast} = useToast();
 
   const handleChange = (e: any) => {
     setInterviewDetails({...interviewDetails, [e.target.name]: e.target.value});
@@ -48,10 +52,30 @@ export default function Home() {
     }
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    // TODO: Implement the logic to save interview details and trigger AI feedback
-    console.log('Interview Details:', interviewDetails);
+
+    try {
+      const feedback = await generateInterviewFeedback({
+        company: interviewDetails.company,
+        round: interviewDetails.round,
+        rejectionReason: interviewDetails.rejectionReason,
+      });
+
+      setAiFeedback(feedback);
+
+      toast({
+        title: 'AI Feedback Generated!',
+        description: 'Check the AI Feedback section below.',
+      });
+    } catch (error: any) {
+      console.error('Failed to generate interview feedback:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to generate interview feedback. Please try again.',
+      });
+    }
   };
 
   useEffect(() => {
@@ -59,7 +83,6 @@ export default function Home() {
       const apiKey = process.env.NEXT_PUBLIC_SERPER_API_KEY;
       if (!apiKey) {
         console.error('Serper API key is missing. Please set the NEXT_PUBLIC_SERPER_API_KEY environment variable.');
-        // It's important to return here to prevent the fetch from running without a key.
         return;
       }
       try {
@@ -108,13 +131,6 @@ export default function Home() {
             <SidebarMenuItem>
               <SidebarMenuButton>Dashboard</SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton>Interviews</SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton>AI Feedback</SidebarMenuButton>
-            </SidebarMenuItem>
-            {/* Add more menu items as needed */}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -173,25 +189,38 @@ export default function Home() {
                   value={interviewDetails.round}
                   onChange={handleChange}
                 />
-                <Input
-                  type="text"
-                  name="status"
-                  placeholder="Status"
-                  value={interviewDetails.status}
-                  onChange={handleChange}
-                />
-                <Input
-                  type="text"
+                <Textarea
                   name="rejectionReason"
                   placeholder="Rejection Reason"
                   value={interviewDetails.rejectionReason}
                   onChange={handleChange}
                 />
-                <Button type="submit">Submit</Button>
+                <Button type="submit">Generate Feedback</Button>
               </form>
             </CardContent>
           </Card>
-          {/* AI Feedback and other components will be added here */}
+          {aiFeedback && (
+            <Card>
+              <CardHeader>
+                <CardTitle>AI Interview Feedback</CardTitle>
+                <CardDescription>Here's what our AI thinks about your interview:</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div>
+                  <h3 className="text-lg font-semibold">Feedback:</h3>
+                  <p>{aiFeedback.feedback}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">Improvement Plan:</h3>
+                  <p>{aiFeedback.improvementPlan}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">Cheat Sheet:</h3>
+                  <p>{aiFeedback.cheatSheet}</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </SidebarProvider>
