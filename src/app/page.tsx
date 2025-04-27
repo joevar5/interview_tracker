@@ -9,6 +9,7 @@ import {useToast} from '@/hooks/use-toast';
 import {useState} from 'react';
 import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback';
 import {Loader2} from 'lucide-react';
+import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts';
 
 interface Company {
   name: string;
@@ -34,17 +35,17 @@ const predefinedRejectionReasons = [
   'Better candidate found',
 ];
 
-export default function Home() {
-  const [interviewDetails, setInterviewDetails] = useState({
-    company: '',
-    round: '',
-    rejectionReason: '',
-  });
+const initialInterviewDetails = {
+  company: '',
+  round: '',
+  rejectionReason: '',
+};
 
+export default function Home() {
+  const [interviewDetails, setInterviewDetails] = useState(initialInterviewDetails);
   const [isOtherCompany, setIsOtherCompany] = useState(false);
   const [isOtherRound, setIsOtherRound] = useState(false);
   const [isOtherRejectionReason, setIsOtherRejectionReason] = useState(false);
-  const [companies, setCompanies] = useState<Company[]>(predefinedCompanies);
   const [aiFeedback, setAiFeedback] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const {toast} = useToast();
@@ -83,10 +84,10 @@ export default function Home() {
     }
   };
 
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
+    setAiFeedback(null);
 
     try {
       const feedback = await generateInterviewFeedback({
@@ -113,131 +114,173 @@ export default function Home() {
     }
   };
 
+  const data = [
+    {name: 'Google', interviews: 4000,  amt: 2400},
+    {name: 'Microsoft', interviews: 3000, amt: 2210},
+    {name: 'Amazon', interviews: 2000,  amt: 2290},
+    {name: 'Facebook', interviews: 2780,  amt: 2000},
+    {name: 'Apple', interviews: 1890,  amt: 2181},
+    {name: 'Netflix', interviews: 2390,  amt: 2500},
+    {name: 'Other', interviews: 3490,  amt: 2100},
+  ];
+
   return (
-    <div className="container mx-auto p-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      {/* Interview Tracking Card */}
-      <Card className="bg-secondary">
-        <CardHeader>
-          <CardTitle>Track Your Interview</CardTitle>
-          <CardDescription>Enter the details of your interview.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="grid gap-4">
-            <Select onValueChange={handleCompanySelect}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Company" />
-              </SelectTrigger>
-              <SelectContent>
-                {companies.map(company => (
-                  <SelectItem key={company.name} value={company.name}>
-                    {company.logo && (
-                      <img
-                        src={`https://logo.clearbit.com/${company.logo}`}
-                        alt={company.name}
-                        className="mr-2 h-5 w-5 rounded-full object-cover"
-                      />
-                    )}
-                    {company.name}
-                  </SelectItem>
-                ))}
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
+    <div className="container mx-auto p-4">
+      {/* Heading */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-semibold">InterviewPilot Dashboard</h1>
+        <p className="text-muted-foreground">Track your interview progress and get AI-powered feedback.</p>
+      </div>
 
-            {isOtherCompany && (
-              <Input
-                type="text"
-                name="company"
-                placeholder="Company"
-                value={interviewDetails.company}
-                onChange={handleChange}
-              />
-            )}
-
-            <Select onValueChange={handleRoundSelect}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Round" />
-              </SelectTrigger>
-              <SelectContent>
-                {predefinedRounds.map(round => (
-                  <SelectItem key={round} value={round}>
-                    {round}
-                  </SelectItem>
-                ))}
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {isOtherRound && (
-              <Input
-                type="text"
-                name="round"
-                placeholder="Round"
-                value={interviewDetails.round}
-                onChange={handleChange}
-              />
-            )}
-
-            <Select onValueChange={handleRejectionReasonSelect}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Rejection Reason" />
-              </SelectTrigger>
-              <SelectContent>
-                {predefinedRejectionReasons.map(reason => (
-                  <SelectItem key={reason} value={reason}>
-                    {reason}
-                  </SelectItem>
-                ))}
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {isOtherRejectionReason && (
-              <Textarea
-                name="rejectionReason"
-                placeholder="Rejection Reason"
-                value={interviewDetails.rejectionReason}
-                onChange={handleChange}
-              />
-            )}
-
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating Feedback...
-                </>
-              ) : (
-                'Generate Feedback'
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      {/* AI Feedback Card */}
-      {aiFeedback && (
+      {/* Interview Tracking and AI Feedback Section */}
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {/* Interview Tracking Card */}
         <Card className="bg-secondary">
           <CardHeader>
-            <CardTitle>AI Interview Feedback</CardTitle>
-            <CardDescription>Here's what our AI thinks about your interview:</CardDescription>
+            <CardTitle>Track Your Interview</CardTitle>
+            <CardDescription>Enter the details of your interview.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div>
-              <h3 className="text-lg font-semibold">Feedback:</h3>
-              <p>{aiFeedback.feedback}</p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">Improvement Plan:</h3>
-              <p>{aiFeedback.improvementPlan}</p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">Cheat Sheet:</h3>
-              <p>{aiFeedback.cheatSheet}</p>
-            </div>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="grid gap-4">
+              <Select onValueChange={handleCompanySelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Company" />
+                </SelectTrigger>
+                <SelectContent>
+                  {predefinedCompanies.map(company => (
+                    <SelectItem key={company.name} value={company.name}>
+                      {company.logo && (
+                        <img
+                          src={`https://logo.clearbit.com/${company.logo}`}
+                          alt={company.name}
+                          className="mr-2 h-5 w-5 rounded-full object-cover"
+                        />
+                      )}
+                      {company.name}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {isOtherCompany && (
+                <Input
+                  type="text"
+                  name="company"
+                  placeholder="Company"
+                  value={interviewDetails.company}
+                  onChange={handleChange}
+                />
+              )}
+
+              <Select onValueChange={handleRoundSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Round" />
+                </SelectTrigger>
+                <SelectContent>
+                  {predefinedRounds.map(round => (
+                    <SelectItem key={round} value={round}>
+                      {round}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {isOtherRound && (
+                <Input
+                  type="text"
+                  name="round"
+                  placeholder="Round"
+                  value={interviewDetails.round}
+                  onChange={handleChange}
+                />
+              )}
+
+              <Select onValueChange={handleRejectionReasonSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Rejection Reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  {predefinedRejectionReasons.map(reason => (
+                    <SelectItem key={reason} value={reason}>
+                      {reason}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {isOtherRejectionReason && (
+                <Textarea
+                  name="rejectionReason"
+                  placeholder="Rejection Reason"
+                  value={interviewDetails.rejectionReason}
+                  onChange={handleChange}
+                />
+              )}
+
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating Feedback...
+                  </>
+                ) : (
+                  'Generate Feedback'
+                )}
+              </Button>
+            </form>
           </CardContent>
         </Card>
-      )}
+
+        {/* AI Feedback Card */}
+        {aiFeedback && (
+          <Card className="bg-secondary">
+            <CardHeader>
+              <CardTitle>AI Interview Feedback</CardTitle>
+              <CardDescription>Here's what our AI thinks about your interview:</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div>
+                <h3 className="text-lg font-semibold">Feedback:</h3>
+                <p>{aiFeedback.feedback}</p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Improvement Plan:</h3>
+                <p>{aiFeedback.improvementPlan}</p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Cheat Sheet:</h3>
+                <p>{aiFeedback.cheatSheet}</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Interview Statistics Visualization */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4 text-center">Interview Statistics</h2>
+        <Card className="bg-secondary">
+          <CardContent>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="interviews" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+            <p className="text-sm text-muted-foreground mt-2 text-center">Number of interviews per company.</p>
+          </CardContent>
+        </Card>
+      </div>
+       <footer className="mt-8 text-center text-muted-foreground">
+        <p>InterviewPilotDashboard © 2025 InterviewPilot</p>
+      </footer>
     </div>
   );
 }
