@@ -3,8 +3,29 @@
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Input} from '@/components/ui/input';
-import {Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarSeparator, SidebarTrigger} from '@/components/ui/sidebar';
-import {useState} from 'react';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarSeparator,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
+import {useState, useEffect} from 'react';
+
+// Mock data for common companies
+const commonCompanies = [
+  {name: 'Google', logo: 'https://picsum.photos/40/40'},
+  {name: 'Microsoft', logo: 'https://picsum.photos/40/40'},
+  {name: 'Amazon', logo: 'https://picsum.photos/40/40'},
+  {name: 'Facebook', logo: 'https://picsum.photos/40/40'},
+  {name: 'Apple', logo: 'https://picsum.photos/40/40'},
+];
 
 export default function Home() {
   const [interviewDetails, setInterviewDetails] = useState({
@@ -14,8 +35,20 @@ export default function Home() {
     rejectionReason: '',
   });
 
+  const [isOtherCompany, setIsOtherCompany] = useState(false);
+
   const handleChange = (e: any) => {
     setInterviewDetails({...interviewDetails, [e.target.name]: e.target.value});
+  };
+
+  const handleCompanySelect = (value: string) => {
+    if (value === 'other') {
+      setIsOtherCompany(true);
+      setInterviewDetails({...interviewDetails, company: ''});
+    } else {
+      setIsOtherCompany(false);
+      setInterviewDetails({...interviewDetails, company: value});
+    }
   };
 
   const handleSubmit = (e: any) => {
@@ -23,6 +56,13 @@ export default function Home() {
     // TODO: Implement the logic to save interview details and trigger AI feedback
     console.log('Interview Details:', interviewDetails);
   };
+
+  // Fetch common companies from an API endpoint (replace with your actual endpoint)
+  useEffect(() => {
+    // fetch('/api/common-companies')
+    //   .then(response => response.json())
+    //   .then(data => setCommonCompanies(data));
+  }, []);
 
   return (
     <SidebarProvider>
@@ -64,13 +104,34 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="grid gap-4">
-                <Input
-                  type="text"
-                  name="company"
-                  placeholder="Company"
-                  value={interviewDetails.company}
-                  onChange={handleChange}
-                />
+                <Select onValueChange={handleCompanySelect}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Company" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {commonCompanies.map(company => (
+                      <SelectItem key={company.name} value={company.name}>
+                        <img
+                          src={company.logo}
+                          alt={company.name}
+                          className="mr-2 h-5 w-5 rounded-full object-cover"
+                        />
+                        {company.name}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {isOtherCompany && (
+                  <Input
+                    type="text"
+                    name="company"
+                    placeholder="Company"
+                    value={interviewDetails.company}
+                    onChange={handleChange}
+                  />
+                )}
                 <Input
                   type="text"
                   name="round"
@@ -102,4 +163,3 @@ export default function Home() {
     </SidebarProvider>
   );
 }
-
