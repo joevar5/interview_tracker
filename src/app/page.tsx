@@ -59,7 +59,7 @@ export default function Home() {
   const [isOtherCompany, setIsOtherCompany] = useState(false);
   const [isOtherRound, setIsOtherRound] = useState(false);
   const [isOtherRejectionReason, setIsOtherRejectionReason] = useState(false);
-  const [aiFeedback, setAiFeedback] = useState<any>(null);
+  const [aiFeedback, setAiFeedback, ] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const {toast} = useToast();
 
@@ -155,9 +155,9 @@ export default function Home() {
       </div>
 
       {/* Interview Tracking and AI Feedback Section */}
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-row gap-4">
         {/* Interview Tracking Card */}
-        <Card className="bg-secondary">
+        <Card className="bg-secondary w-1/3">
           <CardHeader>
             <CardTitle>Track Your Interview</CardTitle>
             <CardDescription>Enter the details of your interview.</CardDescription>
@@ -251,7 +251,7 @@ export default function Home() {
 
         {/* AI Feedback Card */}
         {aiFeedback && (
-          <Card className="bg-secondary">
+          <Card className="bg-secondary w-2/3">
             <CardHeader>
               <CardTitle>AI Interview Feedback</CardTitle>
               <CardDescription>Here's what our AI thinks about your interview:</CardDescription>
