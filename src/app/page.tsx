@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/accordion';
 import {cn} from '@/lib/utils';
 import {ArrowDown, ArrowUp} from 'lucide-react';
+import {ChartPie} from '@radix-ui/react-icons';
 
 interface Company {
   name: string;
@@ -150,8 +151,8 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="flex  gap-4">
-        <Card className="bg-secondary w-full md:w-1/3">
+      <div className="grid gap-4">
+        <Card className="bg-secondary">
           <CardHeader>
             <CardTitle>Track Your Interview</CardTitle>
             <CardDescription>Enter the details of your interview.</CardDescription>
@@ -244,7 +245,7 @@ export default function Home() {
         </Card>
 
         {aiFeedback && (
-          <Card className="bg-secondary w-full md:w-2/3">
+          <Card className="bg-secondary">
             <CardHeader>
               <CardTitle>AI Interview Feedback</CardTitle>
               <CardDescription>Here's what our AI thinks about your interview:</CardDescription>
