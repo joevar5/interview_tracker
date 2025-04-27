@@ -26,6 +26,14 @@ const predefinedCompanies: Company[] = [
 
 const predefinedRounds = ['First Round', 'Technical Interview', 'Final Round'];
 
+const predefinedRejectionReasons = [
+  'Lack of experience',
+  'Poor communication skills',
+  'Not a good fit for the company culture',
+  'Technical skills lacking',
+  'Better candidate found',
+];
+
 export default function Home() {
   const [interviewDetails, setInterviewDetails] = useState({
     company: '',
@@ -35,6 +43,7 @@ export default function Home() {
 
   const [isOtherCompany, setIsOtherCompany] = useState(false);
   const [isOtherRound, setIsOtherRound] = useState(false);
+  const [isOtherRejectionReason, setIsOtherRejectionReason] = useState(false);
   const [companies, setCompanies] = useState<Company[]>(predefinedCompanies);
   const [aiFeedback, setAiFeedback] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,6 +72,17 @@ export default function Home() {
       setInterviewDetails({...interviewDetails, round: value});
     }
   };
+
+  const handleRejectionReasonSelect = (value: string) => {
+    if (value === 'other') {
+      setIsOtherRejectionReason(true);
+      setInterviewDetails({...interviewDetails, rejectionReason: ''});
+    } else {
+      setIsOtherRejectionReason(false);
+      setInterviewDetails({...interviewDetails, rejectionReason: value});
+    }
+  };
+
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -158,12 +178,29 @@ export default function Home() {
               />
             )}
 
-            <Textarea
-              name="rejectionReason"
-              placeholder="Rejection Reason"
-              value={interviewDetails.rejectionReason}
-              onChange={handleChange}
-            />
+            <Select onValueChange={handleRejectionReasonSelect}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Rejection Reason" />
+              </SelectTrigger>
+              <SelectContent>
+                {predefinedRejectionReasons.map(reason => (
+                  <SelectItem key={reason} value={reason}>
+                    {reason}
+                  </SelectItem>
+                ))}
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {isOtherRejectionReason && (
+              <Textarea
+                name="rejectionReason"
+                placeholder="Rejection Reason"
+                value={interviewDetails.rejectionReason}
+                onChange={handleChange}
+              />
+            )}
+
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
