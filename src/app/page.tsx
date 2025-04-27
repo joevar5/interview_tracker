@@ -21,8 +21,14 @@ import {useToast} from '@/hooks/use-toast';
 import {useState} from 'react';
 import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback';
 import {Loader2} from 'lucide-react';
-import {Badge} from '@/components/ui/badge';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import {cn} from '@/lib/utils';
+import {ArrowDown, ArrowUp} from 'lucide-react';
 
 interface Company {
   name: string;
@@ -129,15 +135,6 @@ export default function Home() {
   };
 
   const handleSaveAsPdf = () => {
-    if (!aiFeedback) {
-      toast({
-        variant: 'destructive',
-        title: 'No Feedback',
-        description: 'Please generate feedback first.',
-      });
-      return;
-    }
-
     toast({
       title: 'Feature in Progress',
       description: 'Saving to PDF is coming soon!',
@@ -153,7 +150,7 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex  gap-4">
         <Card className="bg-secondary w-full md:w-1/3">
           <CardHeader>
             <CardTitle>Track Your Interview</CardTitle>
@@ -252,38 +249,50 @@ export default function Home() {
               <CardTitle>AI Interview Feedback</CardTitle>
               <CardDescription>Here's what our AI thinks about your interview:</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div>
-                <h3 className="text-lg font-semibold">Feedback:</h3>
-                <p>{aiFeedback.feedback}</p>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold">Improvement Plan:</h3>
-                <ol className="list-decimal pl-5">
-                  {aiFeedback.improvementPlan.split('\n').map((step: string, index: number) => (
-                    step.trim() !== '' ? (
-                      <li key={index} className="mb-2">
-                        <Badge variant="secondary">Step {index + 1}</Badge> {step}
-                      </li>
-                    ) : null
-                  ))}
-                </ol>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold">Cheat Sheet:</h3>
-                <ol className="list-decimal pl-5">
-                  {aiFeedback.cheatSheet.split('\n').map((item: string, index: number) => (
-                    item.trim() !== '' ? (
-                      <li key={index} className="mb-2">
-                         <Badge variant="secondary">Tip {index + 1}</Badge> {item}
-                      </li>
-                    ) : null
-                  ))}
-                </ol>
-              </div>
-
+            <CardContent className="space-y-4">
+              <Accordion type="single" collapsible>
+                <AccordionItem value="feedback">
+                  <AccordionTrigger>
+                    Feedback
+                    <ArrowDown className="h-4 w-4" />
+                  </AccordionTrigger>
+                  <AccordionContent>{aiFeedback.feedback}</AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="improvement-plan">
+                  <AccordionTrigger>
+                    Improvement Plan
+                    <ArrowDown className="h-4 w-4" />
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ol className="list-decimal pl-5">
+                      {aiFeedback.improvementPlan.split('\n').map((step: string, index: number) =>
+                        step.trim() !== '' ? (
+                          <li key={index} className="mb-2">
+                            {step}
+                          </li>
+                        ) : null
+                      )}
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="cheat-sheet">
+                  <AccordionTrigger>
+                    Cheat Sheet
+                    <ArrowDown className="h-4 w-4" />
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ol className="list-decimal pl-5">
+                      {aiFeedback.cheatSheet.split('\n').map((item: string, index: number) =>
+                        item.trim() !== '' ? (
+                          <li key={index} className="mb-2">
+                            {item}
+                          </li>
+                        ) : null
+                      )}
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
               <Button onClick={handleSaveAsPdf}>Save as PDF (Coming Soon)</Button>
             </CardContent>
           </Card>
