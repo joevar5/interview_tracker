@@ -21,7 +21,7 @@ import {useToast} from '@/hooks/use-toast';
 import {useState} from 'react';
 import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback';
 import {Loader2} from 'lucide-react';
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
+import {Badge} from '@/components/ui/badge';
 
 interface Company {
   name: string;
@@ -262,20 +262,31 @@ export default function Home() {
                 <p>{aiFeedback.feedback}</p>
               </div>
 
-              <Accordion type="single" collapsible>
-                <AccordionItem value="improvement-plan">
-                  <AccordionTrigger>Improvement Plan</AccordionTrigger>
-                  <AccordionContent>
-                    {aiFeedback.improvementPlan}
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="cheat-sheet">
-                  <AccordionTrigger>Cheat Sheet</AccordionTrigger>
-                  <AccordionContent>
-                    {aiFeedback.cheatSheet}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+              <div>
+                <h3 className="text-lg font-semibold">Improvement Plan:</h3>
+                <ol className="list-decimal pl-5">
+                  {aiFeedback.improvementPlan.split('\n').map((step: string, index: number) => (
+                    step.trim() !== '' ? (
+                      <li key={index} className="mb-2">
+                        <Badge variant="secondary">Step {index + 1}</Badge> {step}
+                      </li>
+                    ) : null
+                  ))}
+                </ol>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold">Cheat Sheet:</h3>
+                <ol className="list-decimal pl-5">
+                  {aiFeedback.cheatSheet.split('\n').map((item: string, index: number) => (
+                    item.trim() !== '' ? (
+                      <li key={index} className="mb-2">
+                         <Badge variant="secondary">Tip {index + 1}</Badge> {item}
+                      </li>
+                    ) : null
+                  ))}
+                </ol>
+              </div>
 
               <Button onClick={handleSaveAsPdf}>Save as PDF (Coming Soon)</Button>
             </CardContent>
