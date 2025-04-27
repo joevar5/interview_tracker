@@ -27,20 +27,21 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {cn} from '@/lib/utils';
 import {Badge} from '@/components/ui/badge';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 
 interface Company {
   name: string;
+  logo?: string;
 }
 
 const predefinedCompanies: Company[] = [
-  {name: 'Amazon'},
-  {name: 'Google'},
-  {name: 'Microsoft'},
-  {name: 'Facebook'},
-  {name: 'Apple'},
-  {name: 'Netflix'},
+  {name: 'Amazon', logo: 'https://picsum.photos/40/40'},
+  {name: 'Google', logo: 'https://picsum.photos/40/40'},
+  {name: 'Microsoft', logo: 'https://picsum.photos/40/40'},
+  {name: 'Facebook', logo: 'https://picsum.photos/40/40'},
+  {name: 'Apple', logo: 'https://picsum.photos/40/40'},
+  {name: 'Netflix', logo: 'https://picsum.photos/40/40'},
 ];
 
 const predefinedRounds = ['First Round', 'Technical Interview', 'Final Round'];
@@ -51,7 +52,6 @@ const predefinedRejectionReasons = [
   'Not a good fit for the company culture',
   'Technical skills lacking',
   'Better candidate found',
-  'I think it is behvarial round',
 ];
 
 const initialInterviewDetails = {
@@ -160,7 +160,15 @@ export default function Home() {
                   <SelectContent>
                     {predefinedCompanies.map(company => (
                       <SelectItem key={company.name} value={company.name}>
-                        {company.name}
+                        <div className="flex items-center gap-2">
+                          {company.logo && (
+                            <Avatar className="h-5 w-5">
+                              <AvatarImage src={company.logo} alt={company.name} />
+                              <AvatarFallback>{company.name.substring(0, 2)}</AvatarFallback>
+                            </Avatar>
+                          )}
+                          <span>{company.name}</span>
+                        </div>
                       </SelectItem>
                     ))}
                     <SelectItem value="other">Other</SelectItem>
