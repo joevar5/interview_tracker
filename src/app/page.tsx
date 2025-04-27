@@ -188,7 +188,7 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col md:flex-row -mx-4">
-        <Card className="bg-secondary w-full md:w-1/3 px-4 mb-4">
+        <Card className="bg-secondary w-full">
           <CardHeader>
             <CardTitle>Track Your Interview</CardTitle>
             <CardDescription>Enter the details of your interview.</CardDescription>
