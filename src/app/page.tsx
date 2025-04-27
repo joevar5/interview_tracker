@@ -6,32 +6,14 @@ import {Input} from '@/components/ui/input';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {Textarea} from '@/components/ui/textarea';
 import {useToast} from '@/hooks/use-toast';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import {useState} from 'react';
-import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback'; // Import the function
+import {generateInterviewFeedback} from '@/ai/flows/generate-interview-feedback';
+import {Loader2} from 'lucide-react';
 
 interface Company {
   name: string;
   logo: string;
 }
-
-const data = [
-  {name: 'Round 1', uv: 4000, pv: 2400, amt: 2400},
-  {name: 'Round 2', uv: 3000, pv: 1398, amt: 2210},
-  {name: 'Round 3', uv: 2000, pv: 9800, amt: 2290},
-  {name: 'Round 4', uv: 2780, pv: 3908, amt: 2000},
-  {name: 'Round 5', uv: 1890, pv: 4800, amt: 2181},
-  {name: 'Round 6', uv: 2390, pv: 3800, amt: 2500},
-  {name: 'Round 7', uv: 3490, pv: 4300, amt: 2100},
-];
 
 const predefinedCompanies: Company[] = [
   {name: 'Google', logo: 'google.com'},
@@ -52,6 +34,7 @@ export default function Home() {
   const [isOtherCompany, setIsOtherCompany] = useState(false);
   const [companies, setCompanies] = useState<Company[]>(predefinedCompanies);
   const [aiFeedback, setAiFeedback] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const {toast} = useToast();
 
   const handleChange = (e: any) => {
@@ -70,6 +53,7 @@ export default function Home() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const feedback = await generateInterviewFeedback({
@@ -91,6 +75,8 @@ export default function Home() {
         title: 'Error',
         description: 'Failed to generate interview feedback. Please try again.',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -147,7 +133,16 @@ export default function Home() {
               value={interviewDetails.rejectionReason}
               onChange={handleChange}
             />
-            <Button type="submit">Generate Feedback</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating Feedback...
+                </>
+              ) : (
+                'Generate Feedback'
+              )}
+            </Button>
           </form>
         </CardContent>
       </Card>
@@ -175,25 +170,6 @@ export default function Home() {
           </CardContent>
         </Card>
       )}
-
-      {/* Mock Performance Chart Card */}
-      <Card className="bg-secondary">
-        <CardHeader>
-          <CardTitle>Interview Performance</CardTitle>
-          <CardDescription>Visual representation of your interview performance over time.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={data} margin={{top: 10, right: 30, left: 0, bottom: 0}}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Area type="monotone" dataKey="pv" stroke="#8884d8" fill="#8884d8" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
     </div>
   );
 }
