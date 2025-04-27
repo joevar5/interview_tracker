@@ -24,6 +24,8 @@ const predefinedCompanies: Company[] = [
   {name: 'Netflix', logo: 'netflix.com'},
 ];
 
+const predefinedRounds = ['First Round', 'Technical Interview', 'Final Round'];
+
 export default function Home() {
   const [interviewDetails, setInterviewDetails] = useState({
     company: '',
@@ -32,6 +34,7 @@ export default function Home() {
   });
 
   const [isOtherCompany, setIsOtherCompany] = useState(false);
+  const [isOtherRound, setIsOtherRound] = useState(false);
   const [companies, setCompanies] = useState<Company[]>(predefinedCompanies);
   const [aiFeedback, setAiFeedback] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +51,16 @@ export default function Home() {
     } else {
       setIsOtherCompany(false);
       setInterviewDetails({...interviewDetails, company: value});
+    }
+  };
+
+  const handleRoundSelect = (value: string) => {
+    if (value === 'other') {
+      setIsOtherRound(true);
+      setInterviewDetails({...interviewDetails, round: ''});
+    } else {
+      setIsOtherRound(false);
+      setInterviewDetails({...interviewDetails, round: value});
     }
   };
 
@@ -120,13 +133,31 @@ export default function Home() {
                 onChange={handleChange}
               />
             )}
-            <Input
-              type="text"
-              name="round"
-              placeholder="Round"
-              value={interviewDetails.round}
-              onChange={handleChange}
-            />
+
+            <Select onValueChange={handleRoundSelect}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Round" />
+              </SelectTrigger>
+              <SelectContent>
+                {predefinedRounds.map(round => (
+                  <SelectItem key={round} value={round}>
+                    {round}
+                  </SelectItem>
+                ))}
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {isOtherRound && (
+              <Input
+                type="text"
+                name="round"
+                placeholder="Round"
+                value={interviewDetails.round}
+                onChange={handleChange}
+              />
+            )}
+
             <Textarea
               name="rejectionReason"
               placeholder="Rejection Reason"
